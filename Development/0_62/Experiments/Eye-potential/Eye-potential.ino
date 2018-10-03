@@ -1,21 +1,23 @@
-//
-// Backyard Brains 2017
-// 
+// Eye potential experiment
+// Heart & Brain based on ATMEGA 328 (UNO)
 // V1.0
-// Heart and Brain code for Arduino Leonardo
-// Made for Heart & Brain SpikerBox (V0.53)
+// Made for Heart & Brain SpikerBox (V0.62)
+// Backyard Brains
+// Stanislav Mircic
+// https://backyardbrains.com/
 //
-// It records single channel signal of EEG and controlls 6 LEDs
+// Carrier signal is at DIO 10 
+//
+// It records single channel signal of EEG and controlls 7 LEDs
 // that display current voltage level of signal
 //
-// Written by Stanislav Mircic 15.Dec.2017
+// 03.Oct.2018
 //
 
-#define CURRENT_SHIELD_TYPE "HWT:HBLEOSB;"
+#define CURRENT_BOARD_TYPE "HWT:HBLEOSB;"
 
-
-#define POWER_ON_LED 4      //indicated when board is powered
-#define CARRIER_PIN 13      //outputs 5kHz carrier
+#define CARRIER_PIN 10
+#define POWER_LED_PIN 13
 
 #define BUFFER_SIZE 256  //sampling buffer size
 #define SIZE_OF_COMMAND_BUFFER 30 //command buffer size
@@ -50,20 +52,25 @@ void setup(){
   Serial.setTimeout(2);
 
   pinMode(CARRIER_PIN, OUTPUT);
-
+  pinMode(POWER_LED_PIN, OUTPUT);
+  
+  digitalWrite(POWER_LED_PIN, HIGH);
+  
   pinMode(2,OUTPUT); // LED1.
   pinMode(3,OUTPUT); // LED2.
   pinMode(4,OUTPUT); // LED3.
   pinMode(5,OUTPUT); // LED4.
   pinMode(6,OUTPUT); // LED5. 
   pinMode(7,OUTPUT); // LED6. 
-
-  digitalWrite(2, LOW);  //PD1 
-  digitalWrite(3, LOW);  //PD0 
-  digitalWrite(4, LOW);  //PD4
-  digitalWrite(5, LOW);  //PC6
-  digitalWrite(6, LOW);  //PD7
-  digitalWrite(7, LOW);  //PE6 
+  pinMode(8, OUTPUT);// LED7.
+  
+  digitalWrite(2, LOW);   
+  digitalWrite(3, LOW);   
+  digitalWrite(4, LOW);  
+  digitalWrite(5, LOW);  
+  digitalWrite(6, LOW);  
+  digitalWrite(7, LOW);  
+  digitalWrite(8, LOW);    
  
   // TIMER SETUP
   cli();//stop interrupts
@@ -98,7 +105,7 @@ ISR(TIMER1_COMPA_vect) {
    //Interrupt at the timing frequency you set above to measure to measure AnalogIn, and filling the buffers
 
    
-    PORTC ^= B10000000;//generate 5kHz square wave on pin 13
+     PORTB ^= B00000100;//generate 5kHz carrier signal for AM modulation on D10 (bit 2 on port B on ATMEGA 328)
     
    if(commandMode!=1)
    {
@@ -109,28 +116,33 @@ ISR(TIMER1_COMPA_vect) {
 
       //refresh LEDs for left and right eye movements
 
-      PORTD &= B01101100; //turn OFF LEDs on port D
-      PORTC &= B10111111; //turn OFF Digital pin 5
-      PORTE &= B01111111; //turn OFF Digital pin 7
+      PORTD &= B00000011; //turn OFF LEDs on port D
+      PORTB &= B11111110; //turn OFF Digital pin 8
+
  
-      if(tempSample > 750)
+      if(tempSample > 700)
       {  
-          PORTD |= B00000010;//turn on LED
-      }else if(tempSample > 682)
+          PORTD |= B00000100;//turn on LED
+      }else if(tempSample > 600)
       {
-          PORTD |= B00000001;//turn on LED   
-      }else if(tempSample > 511)
+          PORTD |= B00001000;//turn on LED
+      }else if(tempSample > 530)
       {
-          PORTD |= B00010000;//turn on LED 
-      }else if(tempSample > 341)
+          PORTD |= B00010000;//turn on LED
+      }else if(tempSample > 470)
       {
-          PORTC |= B01000000;//turn on LED 
-      }else if(tempSample > 300)
+          PORTD |= B00100000;//turn on LED
+      }else if(tempSample > 400)
       { 
-          PORTD |= B10000000;//turn on LED    
-      }else
+          PORTD |= B01000000;//turn on LED  
+      }
+      else if(tempSample > 300)
+      { 
+          PORTD |= B10000000;//turn on LED  
+      }
+      else
       {    
-          PORTE |= B01000000;//turn on LED 
+          PORTB |= B00000001;//turn on LED
       }
   
   
@@ -238,7 +250,7 @@ void loop(){
                         
                           if(*separator == 'b')//if we received command for impuls
                           {
-                            sendMessage(CURRENT_SHIELD_TYPE);
+                            sendMessage(CURRENT_BOARD_TYPE);
                           }
                       }
                       // Find the next command in input string

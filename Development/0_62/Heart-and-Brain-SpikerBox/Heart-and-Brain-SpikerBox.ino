@@ -65,6 +65,14 @@ void setup(){
   pinMode(7, OUTPUT);
   pinMode(8, OUTPUT);
 
+  digitalWrite(2, LOW);   
+  digitalWrite(3, LOW);   
+  digitalWrite(4, LOW);  
+  digitalWrite(5, LOW);  
+  digitalWrite(6, LOW);  
+  digitalWrite(7, LOW);  
+  digitalWrite(8, LOW);    
+
    
   // TIMER SETUP- the timer interrupt allows preceise timed measurements of the reed switch
   //for mor info about configuration of arduino timers see http://arduino.cc/playground/Code/Timer1
