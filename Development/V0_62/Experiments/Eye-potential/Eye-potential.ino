@@ -120,30 +120,30 @@ ISR(TIMER1_COMPA_vect) {
       PORTB &= B11111110; //turn OFF Digital pin 8
 
  
-      if(tempSample > 700)
-      {  
-          PORTD |= B00000100;//turn on LED
-      }else if(tempSample > 600)
-      {
-          PORTD |= B00001000;//turn on LED
-      }else if(tempSample > 530)
-      {
-          PORTD |= B00010000;//turn on LED
-      }else if(tempSample > 470)
-      {
-          PORTD |= B00100000;//turn on LED
-      }else if(tempSample > 400)
-      { 
-          PORTD |= B01000000;//turn on LED  
-      }
-      else if(tempSample > 300)
-      { 
-          PORTD |= B10000000;//turn on LED  
-      }
-      else
-      {    
-          PORTB |= B00000001;//turn on LED
-      }
+       if(tempSample > 610)
+       {
+           PORTD |= B00000100;//turn on LED
+       }else if(tempSample > 570)
+       {
+           PORTD |= B00001000;//turn on LED
+       }else if(tempSample > 530)
+       {
+           PORTD |= B00010000;//turn on LED
+       }else if(tempSample > 490)
+       {
+           PORTD |= B00100000;//turn on LED
+       }else if(tempSample > 450)
+       {
+           PORTD |= B01000000;//turn on LED
+       }
+       else if(tempSample > 410)
+       {
+           PORTD |= B10000000;//turn on LED
+       }
+       else
+       {
+           PORTB |= B00000001;//turn on LED
+       }
   
   
        reading[head] =  (tempSample>>7)|0x80;//Mark begining of the frame by setting MSB to 1
